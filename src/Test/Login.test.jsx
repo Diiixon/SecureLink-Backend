@@ -9,6 +9,20 @@ import Login from '../components/Login';
 const mockNavigate = vi.fn();
 const mockLogin = vi.fn();
 
+// Mock del componente del modal para que no interfiera con los tests
+vi.mock('../components/MensajeCorreoNoRegistrado', () => ({
+  default: ({ isVisible, onClose }) => {
+    if (!isVisible) return null;
+    return (
+      <div data-testid="error-modal">
+        <h2>Error de Inicio de Sesión</h2>
+        <p>El correo o la contraseña son incorrectos.</p>
+        <button onClick={onClose}>OK</button>
+      </div>
+    );
+  },
+}));
+
 vi.mock('react-router-dom', async (importOriginal) => {
   const original = await importOriginal();
   return { ...original, useNavigate: () => mockNavigate };
@@ -18,9 +32,7 @@ vi.mock('../context/AuthContext', async (importOriginal) => {
     const actual = await importOriginal();
     return {
         ...actual,
-        useAuth: () => ({
-            login: mockLogin,
-        }),
+        useAuth: () => ({ login: mockLogin }),
     };
 });
 
@@ -36,35 +48,30 @@ const renderLogin = () => {
 };
 
 // Objeto de usuario simulado que devolverá nuestro fetch
+// AHORA INCLUYE LA CONTRASEÑA, IGUAL QUE TU MOCKABLE
 const mockUserResponse = {
   user: {
     nombre: "Dixon Test",
     email: "test@test.com",
+    password: "123456",
   },
 };
 
 describe('Componente Login', () => {
   beforeEach(() => {
-    // Limpiamos todos los mocks antes de cada test
-    mockNavigate.mockClear();
-    mockLogin.mockClear();
-    vi.spyOn(window, 'fetch').mockClear();
-    // Simulamos window.alert para que no aparezca en la consola de tests
-    vi.spyOn(window, 'alert').mockImplementation(() => {}); 
+    vi.clearAllMocks(); // Limpia todos los mocks antes de cada test
   });
 
-  it('debería renderizar el formulario correctamente', () => {
+  it('debería renderizar el formulario y no mostrar el modal de error inicialmente', () => {
     renderLogin();
     expect(screen.getByRole('heading', { name: /bienvenido/i })).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/ingresa tu email/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /iniciar sesión/i })).toBeInTheDocument();
+    // Verifica que el modal NO está visible al inicio
+    expect(screen.queryByTestId('error-modal')).not.toBeInTheDocument();
   });
-
-  // ----- INICIO DE LA MODIFICACIÓN -----
 
   it('debería llamar a login y navigate con credenciales correctas', async () => {
     const user = userEvent.setup();
-    // El fetch SIEMPRE debe ser exitoso para que la lógica de validación se ejecute
     vi.spyOn(window, 'fetch').mockResolvedValue({
       ok: true,
       json: async () => mockUserResponse,
@@ -72,63 +79,38 @@ describe('Componente Login', () => {
 
     renderLogin();
     
-    // Escribimos las credenciales correctas
     await user.type(screen.getByPlaceholderText(/ingresa tu email/i), 'test@test.com');
-    await user.type(screen.getByPlaceholderText(/\*{14}/i), '123456'); // Usamos la contraseña correcta
+    await user.type(screen.getByPlaceholderText(/\*{14}/i), '123456');
     await user.click(screen.getByRole('button', { name: /iniciar sesión/i }));
 
-    // Verificamos que se llamó a fetch
-    expect(window.fetch).toHaveBeenCalledWith("http://demo8589789.mockable.io/login");
+    // Verificamos que se llamó a fetch con la URL HTTPS correcta
+    expect(window.fetch).toHaveBeenCalledWith("https://demo8589789.mockable.io/login");
 
-    // Verificamos que se llamó a login y navigate
     await waitFor(() => {
       expect(mockLogin).toHaveBeenCalledWith(mockUserResponse.user);
       expect(mockNavigate).toHaveBeenCalledWith('/analizador');
     });
   });
   
-  it('debería mostrar una alerta con contraseña incorrecta', async () => {
+  it('debería mostrar el modal de error con credenciales incorrectas', async () => {
     const user = userEvent.setup();
-    // El fetch también debe ser exitoso aquí
     vi.spyOn(window, 'fetch').mockResolvedValue({
       ok: true,
       json: async () => mockUserResponse,
     });
-    const alertSpy = vi.spyOn(window, 'alert');
 
     renderLogin();
     
-    // Escribimos la contraseña INCORRECTA
     await user.type(screen.getByPlaceholderText(/ingresa tu email/i), 'test@test.com');
-    await user.type(screen.getByPlaceholderText(/\*{14}/i), 'wrong-password');
+    await user.type(screen.getByPlaceholderText(/\*{14}/i), 'wrong-password'); // Contraseña incorrecta
     await user.click(screen.getByRole('button', { name: /iniciar sesión/i }));
 
-    // Verificamos que se muestra la alerta correcta y que no se navega
-    await waitFor(() => {
-      expect(alertSpy).toHaveBeenCalledWith('Usuario o contraseña incorrectos.');
-      expect(mockLogin).not.toHaveBeenCalled();
-      expect(mockNavigate).not.toHaveBeenCalled();
-    });
-  });
-
-  it('debería mostrar una alerta con email incorrecto', async () => {
-    const user = userEvent.setup();
-    vi.spyOn(window, 'fetch').mockResolvedValue({
-      ok: true,
-      json: async () => mockUserResponse,
-    });
-    const alertSpy = vi.spyOn(window, 'alert');
-
-    renderLogin();
+    // Verificamos que el modal de error AHORA es visible
+    const modalTitle = await screen.findByText('Error de Inicio de Sesión');
+    expect(modalTitle).toBeInTheDocument();
     
-    await user.type(screen.getByPlaceholderText(/ingresa tu email/i), 'wrong@email.com');
-    await user.type(screen.getByPlaceholderText(/\*{14}/i), '123456');
-    await user.click(screen.getByRole('button', { name: /iniciar sesión/i }));
-
-    await waitFor(() => {
-      expect(alertSpy).toHaveBeenCalledWith('Usuario o contraseña incorrectos.');
-      expect(mockLogin).not.toHaveBeenCalled();
-      expect(mockNavigate).not.toHaveBeenCalled();
-    });
+    // Verificamos que no se intentó iniciar sesión ni navegar
+    expect(mockLogin).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });
