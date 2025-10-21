@@ -1,0 +1,144 @@
+/* Contenedor principal de la página que ordena Navbar, main y Footer */
+.profile-page-wrapper {
+    background-color: #001219;
+    color: #94d2bd;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.profile-page-wrapper main {
+    flex-grow: 1;
+}
+
+/* Contenedor del contenido específico de la página de perfil */
+.profile-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+}
+
+.welcome-message {
+    text-align: center;
+    margin-bottom: 3rem;
+    font-weight: 700;
+    font-size: 2.5rem;
+    color: #ffffff;
+}
+
+/* Grid Layout para la página de perfil */
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    gap: 1.5rem;
+    grid-template-areas:
+        "user     reports   stats"
+        "history  history   history"
+        "connect  .         .";
+}
+
+/* Asignación de áreas a cada tarjeta */
+.profile-user-card { grid-area: user; }
+.profile-reports-count { grid-area: reports; }
+.profile-stats-summary { grid-area: stats; }
+.profile-history { grid-area: history; }
+.profile-last-connection { grid-area: connect; }
+
+/* Estilo base para todas las tarjetas */
+.profile-card {
+    background-color: #005f73;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(10, 147, 150, 0.5);
+    min-width: 0;
+}
+
+/* Tarjeta de información del usuario */
+.profile-user-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.profile-photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #0a9396;
+}
+
+.profile-username {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.profile-member-since {
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Tarjetas de contadores y estadísticas */
+.profile-reports-count { text-align: center; }
+.count-label { font-size: 1rem; margin-bottom: 0.5rem; }
+.count-number { font-size: 3.5rem; font-weight: 700; color: #ee9b00; line-height: 1; margin: 0; }
+
+.profile-stats-summary h3,
+.profile-last-connection h3,
+.profile-history h3 {
+    color: #ffffff;
+    font-size: 1.25rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.profile-stats-summary ul { list-style: none; padding: 0; margin: 0; }
+.profile-stats-summary li { font-size: 1rem; margin-bottom: 0.5rem; }
+.profile-stats-summary li span { color: #ffffff; font-weight: 500; }
+.profile-last-connection { text-align: center; }
+.profile-last-connection p { font-size: 1rem; color: #ffffff; margin: 0; line-height: 1.4; }
+
+/* Tabla de historial */
+.table-responsive-wrapper { overflow-x: auto; }
+.profile-history table { width: 100%; border-collapse: collapse; min-width: 600px; }
+.profile-history th, .profile-history td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid rgba(148, 210, 189, 0.2); }
+.profile-history th { color: #94d2bd; font-weight: 600; }
+.profile-history td { color: #ffffff; }
+.link-text { font-family: monospace; font-size: 0.9rem; }
+
+.status-icon { font-size: 1.5rem; font-weight: bold; display: inline-block; width: 25px; text-align: center; }
+.status-danger { color: #ae2012; }
+.status-warning { color: #f1c40f; }
+.status-safe { color: #3498db; }
+
+/* Media Queries para diseño responsivo */
+@media (max-width: 1200px) {
+    .profile-grid {
+        grid-template-columns: 1fr 1fr; 
+        grid-template-areas:
+            "user      reports"
+            "stats     connect"
+            "history   history";
+    }
+}
+
+@media (max-width: 767px) {
+    .profile-grid {
+        grid-template-columns: 1fr; 
+        gap: 1rem; 
+        grid-template-areas:
+            "user"
+            "reports"
+            "stats"
+            "history"
+            "connect";
+    }
+    .profile-container { padding: 2rem 1rem; }
+    .welcome-message { font-size: 1.8rem; }
+    .profile-user-card { flex-direction: column; text-align: center; gap: 1rem; }
+    .profile-card { padding: 1rem; }
+    .count-number { font-size: 3rem; }
+}

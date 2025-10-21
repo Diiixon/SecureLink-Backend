@@ -1,0 +1,254 @@
+/* Paleta de Colores a utilizar */
+:root {
+    --c-dark-blue: #001219;
+    --c-dark-teal: #005f73;
+    --c-teal: #0a9396;
+    --c-mint: #94d2bd;
+    --c-gold: #ee9b00;
+    --c-white: #ffffff;
+    --c-red: #ae2012;
+    --c-green-accent: #2ecc71;
+}
+
+/* Estilos para el cuerpo de la página */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--c-dark-blue); /* fondo de la pagina web */
+    color: var(--c-mint);
+    margin: 0;
+    padding: 0;
+}
+
+/* Estilo para el botón de Iniciar/Cerrar Sesión */
+.btn-login {
+    background-color: var(--c-gold);
+    color: var(--c-dark-blue);
+    border: none;
+    padding: 0.5rem 1.25rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.2s, background-color 0.2s; /* animación para el botón de login */
+}
+
+.btn-login:hover { /* efecto visual al pasar el mouse por encima del botón */
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+/* Estilos para el contenedor principal */
+.auth-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 120px);
+    padding: 2rem 1rem;
+}
+
+/* Estilo para el formulario */
+.form-card {
+    background-color: var(--c-dark-teal);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* efecto sombra */
+    width: 100%;
+    max-width: 42rem;
+    box-sizing: border-box;
+}
+
+/* Estilo para el encabezado */
+.form-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.form-header h2 {
+    color: var(--c-white);
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.form-header p {
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+}
+
+/* Estilo para los campos del formulario */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+}
+
+.form-row .input-group {
+    flex: 1 1 50%;
+}
+
+
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.input-group input {
+    width: 100%;
+    background-color: rgb(255, 255, 255);
+    border: 2px solid var(--c-teal);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    color: var(--c-dark-blue);
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s; /* animación */
+}
+
+/* Estilo para cuando hace clic en el campo de texto */
+.input-group input:focus {
+    outline: none; /* elimina el contorno de un elemento enfocado */
+    border-color: var(--c-gold);
+}
+
+/* Estilo para el mensaje de error de contraseña */
+.error-message {
+    color: var(--c-red); /* Usa la variable de color rojo que ya tienes */
+    font-size: 0.875rem;
+    margin-top: 0.5rem; /* Espacio para separarlo del input */
+    margin-bottom: 0; /* Asegúrate que no añada espacio extra abajo */
+    text-align: left; /* Alinea el texto a la izquierda */
+}
+
+/* Estilo para botón y final de formulario */
+.submit-btn {
+    width: 100%;
+    padding: 0.875rem;
+    background-color: var(--c-gold);
+    color: var(--c-dark-blue);
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.2s;
+}
+
+.submit-btn:hover {
+    background-color: #d68c00;
+}
+
+.form-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+}
+
+.form-footer a {
+    color: var(--c-gold);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.form-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Estilos para ventana emergente de registro exitoso */
+/* Registro exitoso */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000; /* orden de apilamiento, lo que permite que este se muestre por encima de otros objetos */
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.visible {
+    visibility: visible;
+    opacity: 1;
+}
+
+.modal-content {
+    background-color: var(--c-dark-teal);
+    padding: 2rem;
+    border-radius: 1rem;
+    text-align: center;
+    border: 1px solid var(--c-teal);
+    width: 90%;
+    max-width: 400px;
+}
+
+.modal-icon {
+    font-size: 3rem;
+    color: var(--c-green-accent);
+    margin-bottom: 1rem;
+    line-height: 1;
+}
+
+.modal-content h2 {
+    color: var(--c-white);
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.modal-content p {
+    color: var(--c-mint);
+    margin-bottom: 2rem;
+}
+
+.modal-btn {
+    background-color: var(--c-gold);
+    color: var(--c-dark-blue);
+    border: none;
+    padding: 0.75rem 2rem;
+    font-weight: 700;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.modal-btn:hover {
+    background-color: #d68c00;
+}
+
+
+/* Media Query moviles */
+@media (max-width: 767.98px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .form-row .input-group {
+        flex-basis: 100%;
+    }
+
+    .auth-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+
+    .form-card {
+        padding: 1.5rem;
+    }
+}
