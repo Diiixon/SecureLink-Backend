@@ -48,7 +48,6 @@ const renderLogin = () => {
 };
 
 // Objeto de usuario simulado que devolverá nuestro fetch
-// AHORA INCLUYE LA CONTRASEÑA, IGUAL QUE TU MOCKABLE
 const mockUserResponse = {
   user: {
     nombre: "Dixon Test",

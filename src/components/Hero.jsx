@@ -1,6 +1,7 @@
 import '../style/Hero.css';
 import heroLogo from '../assets/SecureLink logo.png'
 import {Link} from "react-router-dom";
+//componente que muestra la seccion principal de la pagina con llamada a la accion para registrarse 
 
 function Hero() {
     return (

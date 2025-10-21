@@ -1,8 +1,8 @@
 import '../style/Learn.css';
-import React from "react";
 import maliciousEmailImg from '../assets/Malicious_Emails.png';
 import urlAnatomyImg from '../assets/anatomia url.png';
 import qrDangersImg from '../assets/peligros ocultos.png';
+//Componente que muestra los recursos de aprendizaje en la pagina principal sin estar logeado
 
 function Learn() {
     return (

@@ -1,5 +1,5 @@
 import '../style/Footer.css';
-import React from 'react';
+//componente que muestra el footer de la pagina con enlaces a terminos y privacidad
 
 function Footer() {
   return (

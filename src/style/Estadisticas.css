@@ -1,4 +1,4 @@
-/* src/style/Estadisticas.css */
+
 
 :root {
     --c-dark-blue: #001219;
@@ -26,14 +26,14 @@
     flex-grow: 1;
 }
 
-/* --- INICIO DE LA CORRECCIÓN --- */
+
 .dashboard-container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 3rem 2rem;
-    display: block; /* AÑADE ESTA LÍNEA para forzar el apilamiento vertical */
+    display: block; 
 }
-/* --- FIN DE LA CORRECCIÓN --- */
+
 
 .dashboard-header {
     text-align: center;

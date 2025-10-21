@@ -61,26 +61,26 @@ describe('Componente Analizador', () => {
     expect(await screen.findByText(/Por favor, ingresa un enlace/i)).toBeInTheDocument();
   });
 
-  // --- PRUEBA ASÍNCRONA CORREGIDA ---
+  //  Prueba principal para la animación de carga y resultado
   it('debería mostrar la animación de carga y luego el resultado al analizar', async () => {
     const user = userEvent.setup();
     renderAnalizador();
 
-    // 1. El usuario interactúa con la página
+    //usuario interactúa con la página
     await user.type(screen.getByPlaceholderText(/ingresa o pega aquí/i), 'http://ejemplo-malicioso.com');
     await user.click(screen.getByRole('button', { name: /analizar ahora/i }));
 
-    // 2. Verificamos que el estado de carga aparece inmediatamente
+    //Verificamos que el estado de carga aparece inmediatamente
     expect(screen.getByRole('button', { name: /analizando.../i })).toBeDisabled();
 
-    // 3. ESPERAMOS a que la tarjeta de resultado aparezca.
+    //ESPERAMOS a que la tarjeta de resultado aparezca.
     // 'findBy' esperará automáticamente a que el setTimeout de 2 segundos termine.
     const resultado = await screen.findByText(/enlace seguro|sitio sospechoso|peligro/i, {}, { timeout: 3000 });
 
-    // 4. Una vez que el resultado está en pantalla, verificamos el estado final
+    //Una vez que el resultado está en pantalla, verificamos el estado final
     expect(resultado).toBeInTheDocument();
     
-    // 5. Usamos waitFor para esperar a que los efectos secundarios (actualización de estado) se completen
+    //Usamos waitFor para esperar a que los efectos secundarios (actualización de estado) se completen
     await waitFor(() => {
       expect(mockLogin).toHaveBeenCalledOnce();
     });

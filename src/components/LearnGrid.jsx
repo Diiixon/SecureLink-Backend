@@ -8,6 +8,8 @@ import extensionesImg from '../assets/extensiones.png';
 import softwareImg from '../assets/software.png';
 import estafasImg from '../assets/estafas.png';
 import '../style/LearnGrid.css';
+//Componente que muestra los recursos de aprendizaje al estar logeado
+
 
 function LearnGrid() {
     return (

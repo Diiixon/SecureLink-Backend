@@ -13,21 +13,20 @@ import Navbar from '../components/Navbar';
 // --- Mocks ---
 
 // 1. Importa 'animateScroll' (que será el mock)
-import { animateScroll } from 'react-scroll'; // <-- CAMBIO 1
+import { animateScroll } from 'react-scroll';
 
-// 2. Mock de 'react-scroll'
-// La variable 'mockScrollToTop' ya NO se define aquí afuera
+//Mock de 'react-scroll'
 vi.mock('react-scroll', () => ({
   // Mockeamos 'Link' (ScrollLink) para que sea un <a> simple
   Link: (props) => <a {...props}>{props.children}</a>,
   
-  // Mockeamos 'animateScroll' y creamos el mock 'scrollToTop' AQUÍ DENTRO
+  //Mockeamos 'animateScroll' y creamos el mock 'scrollToTop' AQUÍ DENTRO
   animateScroll: {
-    scrollToTop: vi.fn(), // <-- CAMBIO 2
+    scrollToTop: vi.fn(), 
   },
 }));
 
-// 3. Mock para la función logout que vendrá del contexto
+//Mock para la función logout que vendrá del contexto
 const mockLogout = vi.fn();
 
 // --- Helper de Renderizado ---
@@ -48,10 +47,9 @@ describe('Componente Navbar', () => {
   beforeEach(() => {
     mockLogout.mockClear();
     // Limpiamos el mock importado, no la variable
-    animateScroll.scrollToTop.mockClear(); // <-- CAMBIO 3
+    animateScroll.scrollToTop.mockClear();
   });
 
-  // ... (Las pruebas de Usuario No Autenticado no cambian) ...
   describe('Usuario No Autenticado (Guest)', () => {
     
     it('debería mostrar "Iniciar Sesión" y no "Cerrar Sesión"', () => {
@@ -81,7 +79,7 @@ describe('Componente Navbar', () => {
     });
   });
 
-  // ... (Las pruebas de Usuario Autenticado no cambian, excepto la de logout) ...
+
   describe('Usuario Autenticado (Logged In)', () => {
 
     it('debería mostrar "Cerrar Sesión" y el ícono de perfil', () => {
@@ -109,15 +107,15 @@ describe('Componente Navbar', () => {
 
   // --- Pruebas de Interacción General ---
   it('debería llamar a scrollToTop al hacer clic en el logo', () => {
-    // Arrange
+    
     renderNavbar(false); 
     const logoLink = screen.getByAltText('Logo de SecureLink');
 
-    // Act
+
     fireEvent.click(logoLink);
 
-    // Assert
-    // Comprobamos el mock importado, no la variable
+
+
     expect(animateScroll.scrollToTop).toHaveBeenCalledTimes(1); // <-- CAMBIO 4
   });
 });

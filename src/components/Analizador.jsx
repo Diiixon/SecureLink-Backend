@@ -4,7 +4,10 @@ import ResultadoAnalisis from './ResultadoAnalisis';
 import '../style/Analizador.css';
 
 function Analizador() {
+  //Obtiene el usuario actual y la funcion de login del contexto de autenticacion
   const { currentUser, login } = useAuth();
+
+  // Estados para el texto a analizar
   const [textToAnalyze, setTextToAnalyze] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
@@ -13,11 +16,13 @@ function Analizador() {
   const [selectedFileName, setSelectedFileName] = useState('Ningún archivo seleccionado');
   const [fileContent, setFileContent] = useState('');
 
-  // 1. Nuevo estado para el error
+  //estado para el error en caso de no haber texto o archivo
   const [error, setError] = useState('');
 
-  // 2. Modificamos esta función para que lea el archivo Y LIMPIE EL ERROR
+  //función para que lea el archivo Y LIMPiE EL ERROR
   const handleFileChange = (event) => {
+
+    // se verifica si se ha seleccionado un archivo (0 significa ninguno) (1 o mas significa archivos)
     if (event.target.files.length > 0) {
       if (error) setError(''); // Limpia el error si se selecciona un archivo
       const file = event.target.files[0];
@@ -35,29 +40,33 @@ function Analizador() {
     }
   };
 
-  // 3. Modificamos esta función para que use setError en lugar de alert
+  //funcion para simular el analisis del texto o archivo
   const handleAnalizar = () => {
     const textToProcess = textToAnalyze.trim() || fileContent.trim();
 
     if (!textToProcess) {
-      // Reemplazamos el alert por setError
+      // Si no hay texto ni archivo, muestra un error y no procede
       setError("Por favor, ingresa un enlace o selecciona un archivo para analizar.");
       return;
     }
 
-    setError(''); // Limpiamos el error si la validación pasa
+    setError(''); // se limpia  el error si la validación pasa
     setIsLoading(true);
     setAnalysisResult(null);
 
+
+    // Inicia un temporizador para simular el tiempo de análisis
     setTimeout(() => {
-      const resultados = ['seguros', 'sospechosos', 'bloqueadas'];
-      const randomKey = resultados[Math.floor(Math.random() * resultados.length)];
+      const resultados = ['seguros', 'sospechosos', 'bloqueadas']; //posibles resultados
+      const randomKey = resultados[Math.floor(Math.random() * resultados.length)]; //selecciona uno al azar
       
+      // se crea un reporte nuevo basado en el resultado aleatorio
       let peligro = 'N/A';
       if (randomKey === 'seguros') peligro = 'Ninguno';
       else if (randomKey === 'sospechosos') peligro = 'Scam';
       else if (randomKey === 'bloqueadas') peligro = 'Phishing';
 
+      //nuevo reporte para agregar al historial del usuario
       const newReport = {
         status: randomKey === 'bloqueadas' ? 'danger' : randomKey === 'sospechosos' ? 'warning' : 'safe',
         link: textToProcess,
@@ -66,6 +75,10 @@ function Analizador() {
         imita: 'Sitio Desconocido'
       };
       
+      /*
+
+      //Localstorage no Implemetado ya que se simula con api  mockable.io
+
       const users = JSON.parse(localStorage.getItem('users')) || [];
       const userIndex = users.findIndex(user => user.email === currentUser.email);
 
@@ -83,6 +96,7 @@ function Analizador() {
         globalStats[randomKey] += 1;
         localStorage.setItem('globalStats', JSON.stringify(globalStats));
       }
+      */
 
       setIsLoading(false);
       setAnalysisResult(randomKey);
@@ -92,7 +106,8 @@ function Analizador() {
       setSelectedFileName('Ningún archivo seleccionado');
       document.getElementById('subir-archivo').value = '';
 
-    }, 2000);
+      //Timepo antes de mostrar el resultado
+    }, 700);
   };
 
   return (
@@ -104,14 +119,14 @@ function Analizador() {
           id="texto-analizar" 
           placeholder="Ingresa o Pega Aquí el mensaje o link..."
           value={textToAnalyze}
-          // 4. Modificamos el onChange para limpiar el error al escribir
+          //cada cambio en el textarea, actualiza el estado y limpia el error si existe
           onChange={(e) => {
             setTextToAnalyze(e.target.value);
             if (error) setError('');
           }}
         />
         
-        {/* 5. Mostramos el error aquí si existe */}
+        {/*Mostramos el error aquí si existe*/}
         {error && <p style={{ color: 'red', marginTop: '5px' }}>{error}</p>}
 
         <div className="analizador-acciones">

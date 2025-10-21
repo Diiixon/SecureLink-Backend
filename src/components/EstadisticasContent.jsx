@@ -3,22 +3,27 @@ import { useAuth } from '../context/AuthContext';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
 import { Doughnut, Bar } from 'react-chartjs-2';
 
+//Biblioteca ChartJS para graficos
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
 function EstadisticasContent() {
+    //Obtiene el usuario actual del contexto de autenticacion para obtener sus estadisticas personales
     const { currentUser } = useAuth();
     const [globalStats, setGlobalStats] = useState(null);
 
+    //Carga las estadisticas globales simuladas desde el almacenamiento local al montar el componente o cuando cambia el usuario actual
     useEffect(() => {
         const stats = JSON.parse(localStorage.getItem('globalStats')) || { totalReports: 0, seguros: 0, sospechosos: 0, bloqueadas: 0 };
         setGlobalStats(stats);
     }, [currentUser]);
 
+    // Si los datos no estan disponibles, muestra un mensaje de carga
     if (!currentUser || !globalStats) {
         return <main className="dashboard-container">Cargando estadísticas...</main>;
     }
 
-    const getMostCommonThreat = () => { /* ... tu lógica ... */ };
+    // Preparacion de datos para mostrar en las estadisticas
+    const getMostCommonThreat = () => {  };
     const mostCommonThreat = getMostCommonThreat();
     const totalReports = currentUser.reportsCount || 0;
     const safeReports = currentUser.stats?.seguros || 0;
@@ -52,9 +57,8 @@ function EstadisticasContent() {
         ],
     };
 
-    // --- INICIO DE LA CORRECCIÓN ---
-    // Restauramos la definición completa de las opciones para el texto blanco
 
+    //Grafico de dona
     const doughnutOptions = {
         maintainAspectRatio: false,
         plugins: {
@@ -68,6 +72,7 @@ function EstadisticasContent() {
         }
     };
 
+    //Grafico de barras
     const barOptions = {
         maintainAspectRatio: false,
         plugins: {
@@ -90,7 +95,6 @@ function EstadisticasContent() {
             }
         }
     };
-    // --- FIN DE LA CORRECCIÓN ---
 
     return (
         <>
@@ -98,10 +102,6 @@ function EstadisticasContent() {
                 <h1>Tu Panorama de Seguridad</h1>
                 <p>Datos actualizados en tiempo real</p>
             </div>
-
-            <section className="kpi-grid">
-                {/* ... tus tarjetas KPI ... */}
-            </section>
 
             <section className="dashboard-main-grid">
                 <div className="chart-container card">
