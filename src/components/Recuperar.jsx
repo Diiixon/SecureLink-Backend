@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import '../style/Recuperar.css'; 
+import '../style/RegisterForm.css'; 
 import RespuestaRecuperar from './RespuestaRecuperar'; 
 
 function Recuperar() { 
