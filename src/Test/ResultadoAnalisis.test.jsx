@@ -1,5 +1,3 @@
-// src/Test/ResultadoAnalisis.test.jsx
-
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 // Ajusta la ruta si tu componente está en otra carpeta (ej. 'components')

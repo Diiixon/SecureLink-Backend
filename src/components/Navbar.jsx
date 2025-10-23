@@ -1,21 +1,21 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Link as ScrollLink, animateScroll as scroll } from 'react-scroll';
-import { useAuth } from '../context/AuthContext'; // 1. Importa el hook de autenticación
+import { useAuth } from '../context/AuthContext'; 
 import logo from '../assets/SecureLink logo.png';
 import profileIcon from '../assets/UsuarioIcon.png';
-import '../style/Navbar.css'; // Asegúrate que la ruta sea correcta (ej. '../style/Navbar.css')
+import '../style/Navbar.css'; 
 
-// 2. El componente ya NO recibe props
+
 function Navbar() {
-  const { isLoggedIn, logout } = useAuth(); // 3. Obtén el estado y las funciones del contexto
-  const location = useLocation();
-  const enPaginaPrincipal = location.pathname === '/';
+  const { isLoggedIn, logout } = useAuth(); // Utiliza el contexto de autenticación para obtener el estado de inicio de sesión y la función de cierre de sesión
+  const location = useLocation(); // Obtiene la ubicación actual de la página
+  const enPaginaPrincipal = location.pathname === '/'; // Verifica si la página actual es la página principal
 
-  const irArriba = () => {
+  const irArriba = () => { 
     scroll.scrollToTop();
   };
 
-  return (
+  return ( // Renderiza la cabecera de la página con el logo y el menú de navegación
     <header className='main-header'>
       <nav className='main-nav navbar navbar-expand-lg'>
         <div className='container-fluid'>
@@ -30,9 +30,9 @@ function Navbar() {
             <span className='navbar-toggler-icon'></span>
           </button>
           <div className='collapse navbar-collapse' id='navbarSupportedContent'>
-            <ul className='navbar-nav mx-auto mb-2 mb-lg-0 nav-links'>
+            <ul className='navbar-nav mx-auto mb-2 mb-lg-0 nav-links'> 
+              {/* Para cada enlace el componente verifíca si el usuario está logeado o no */}
               <li className='nav-item'>
-                {/* 4. Usa isLoggedIn del contexto en lugar de isAuthenticated */}
                 {isLoggedIn ? (
                   <Link className='nav-link' to="/analizador">Analizador</Link>
                 ) : (
@@ -62,6 +62,7 @@ function Navbar() {
                 )}
               </li>
             </ul>
+            {/* El componente verifica si el usuario está logeado o no, para mostrar el icono de perfil y botón de cerrar sesión*/}
             <div className='nav-right-actions'>
               {isLoggedIn ? (
                 <>
@@ -71,7 +72,6 @@ function Navbar() {
                     </Link>
                   </div>
                   <div className="nav-action">
-                    {/* 5. Al hacer clic, llama a la función logout del contexto */}
                     <Link to="/" className="btn-login" onClick={logout}>Cerrar Sesión</Link>
                   </div>
                 </>

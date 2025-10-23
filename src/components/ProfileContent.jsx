@@ -1,25 +1,23 @@
-import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import profilePhoto from '../assets/UsuarioIcon.png';
 
-// No es necesario importar el CSS aquí, ya que lo hace la página.
 
-function ProfileContent() {
+function ProfileContent() { // Al iniciar el componente utiza el hook de autenticacion para obtener el usuario actual y guarda su información
   const { currentUser } = useAuth();
 
-  if (!currentUser) {
+  if (!currentUser) { // Si no hay usuario actual, muestra un mensaje de carga, para evitar errores
     return <div className="profile-container"><p>Cargando perfil...</p></div>;
   }
 
   const memberSinceDate = new Date(currentUser.memberSince).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
   const lastLoginDate = currentUser.lastLogin ? new Date(currentUser.lastLogin).toLocaleString('es-ES', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Nunca';
 
+  // Manejo de fechas de registro y última conexión
+
   return (
-    // Usamos la clase 'profile-container' para el contenido principal
+    // Contenido del perfil
     <div className="profile-container">
       <h1 className="welcome-message">Hola bienvenido: {currentUser.nombre}</h1>
-      
-      {/* El div con la clase 'profile-grid' que activa el layout */}
       <div className="profile-grid">
         <div className="profile-card profile-user-card">
           <img src={profilePhoto} alt="Foto de Perfil" className="profile-photo" />
@@ -48,6 +46,7 @@ function ProfileContent() {
                 <tr><th>Estado</th><th>Link Reportado</th><th>Peligro</th><th>Fecha</th><th>Imita a</th></tr>
               </thead>
               <tbody>
+                { /* Si el usuario tiene reportes generados, forma una lista con cada uno de ellos, de lo contrario muestra un mensaje*/ }
                 {currentUser.history.length > 0 ? (
                   currentUser.history.map((item, index) => (
                     <tr key={index}>

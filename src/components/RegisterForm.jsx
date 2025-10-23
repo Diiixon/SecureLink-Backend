@@ -1,21 +1,22 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
-import SuccessModal from './SuccessModal'; // 1. Importa el nuevo componente
+import SuccessModal from './SuccessModal'; 
 
-const API_BASE_URL = "http://demo8589789.mockable.io";
+const API_BASE_URL = "http://demo8589789.mockable.io"; // URL de la API
 
+// Componente para el formulario de registro
 function RegisterForm() {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState({ // Estado para los datos del formulario
         username: "",
         email: "",
         password: "",
         confirmPassword: "",
     });
-    const [passwordError, setPasswordError] = useState(""); 
-    const navigate = useNavigate();
-    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [passwordError, setPasswordError] = useState(""); // Estado para el mensaje de error de contraseña
+    const navigate = useNavigate(); 
+    const [isModalVisible, setIsModalVisible] = useState(false); // Estado para controlar la visibilidad del modal
 
-    const handleChange = (e) => {
+    const handleChange = (e) => { // Función para manejar cambios en los campos del formulario
         const { name, value } = e.target;
         setFormData((prevData) => ({ ...prevData, [name]: value }));
         if (name === "password" || name === "confirmPassword") {
@@ -23,21 +24,21 @@ function RegisterForm() {
         }
     };
 
-    const handleCloseModal = () => {
+    const handleCloseModal = () => { // Función para cerrar la ventana de registro exitoso y redirige al usuario a la página de inicio de sesión
         setIsModalVisible(false);
         navigate('/login');
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => { // Función para manejar el envío del formulario de registro
         e.preventDefault();
-        if (formData.password !== formData.confirmPassword) {
+        if (formData.password !== formData.confirmPassword) { // Verifica si las contraseñas coinciden
             setPasswordError("Las contraseñas no coinciden.");
             return;
         }
         setPasswordError(""); 
 
         try {
-            const response = await fetch(`${API_BASE_URL}/register`, {
+            const response = await fetch(`${API_BASE_URL}/register`, { // Realiza una solicitud POST a la API para el registro
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -46,8 +47,8 @@ function RegisterForm() {
                     password: formData.password,
                 }),
             });
-            const data = await response.json();
-            if (response.ok) {
+            const data = await response.json(); // Procesa la respuesta de la API
+            if (response.ok) { 
                 setIsModalVisible(true);
             } else {
                 alert(data.message || 'Ocurrió un error al registrar.');
@@ -58,6 +59,7 @@ function RegisterForm() {
         }
     };
 
+    // Renderiza el formulario de registro
     return (
         <>
             <main className="auth-container">
@@ -67,7 +69,6 @@ function RegisterForm() {
                         <p>Únete para proteger tu navegación.</p>
                     </div>
                     <form id="formulario" onSubmit={handleSubmit}>
-                        {/* ... tus inputs del formulario no cambian ... */}
                         <div className="input-group">
                             <label htmlFor="username">Nombre de Usuario</label>
                             <input type="text" id="username" name="username" placeholder="Elige un nombre de usuario" required value={formData.username} onChange={handleChange} />
@@ -93,10 +94,9 @@ function RegisterForm() {
                 </div>
             </main>
 
-            {/* 2. Usa el componente y pásale las props */}
             <SuccessModal 
-                isVisible={isModalVisible} 
-                onClose={handleCloseModal} 
+                isVisible={isModalVisible} // Indica si se debe mostrar el modal
+                onClose={handleCloseModal} // Función para cerrar el modal
             />
         </>
     );

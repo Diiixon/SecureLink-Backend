@@ -1,12 +1,12 @@
-import React from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import RegisterForm from '../components/RegisterForm';
-import '../style/RegisterForm.css'; // Asegúrate de que la ruta a tu CSS es correcta
+import '../style/RegisterForm.css'; 
 
+// Página que muestra el formulario de registro
 function RegisterPage() {
   return (
-    <div className="register-page-wrapper"> {/* Puedes usar una clase contenedora si necesitas estilos específicos */}
+    <div className="register-page-wrapper">
       <Navbar />
       <main>
         <RegisterForm />

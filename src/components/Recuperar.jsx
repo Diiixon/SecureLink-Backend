@@ -1,30 +1,24 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../style/Recuperar.css'; 
-import RespuestaRecuperar from './RespuestaRecuperar'; // 1. Importa el modal aquí
+import RespuestaRecuperar from './RespuestaRecuperar'; 
 
-function Recuperar() { // Ya no necesita recibir props
-  // 2. Mueve la lógica del estado aquí adentro
-  const [email, setEmail] = useState('');
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  
-  // El correo para el modal se puede manejar directamente en el submit
-  // No necesitamos un estado separado para 'submittedEmail'
+function Recuperar() { 
+  const [email, setEmail] = useState(''); // Estado para guardar el correo electrónico
+  const [isModalVisible, setIsModalVisible] = useState(false); // Estado para controlar la visibilidad del mensaje de respuesta
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event) => { // Al hacer clic en el botón enviar, evita la recarga de la página y muestra el mensaje de respuesta
     event.preventDefault(); 
-    // Al enviar el formulario, simplemente activamos el modal
     setIsModalVisible(true);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseModal = () => { // Una vez que el usuario presiona Ok se oculta el mensaje de respuesta y se limpia el campo de correo electrónico
     setIsModalVisible(false);
-    // Opcional: limpiar el campo de email después de cerrar el modal
     setEmail('');
   };
 
+  // Contenido de la sección para recuperar contraseña
   return (
-    // 3. Usamos un Fragment (<>) para devolver dos elementos hermanos: el main y el modal
     <>
       <main className="auth-container">
         <div className="form-card">
@@ -52,11 +46,10 @@ function Recuperar() { // Ya no necesita recibir props
           </form>
         </div>
       </main>
-
-      {/* 4. La lógica para mostrar el modal ahora vive aquí */}
-      {isModalVisible && (
+    
+      {isModalVisible && ( // Si el mensaje de respuesta está visible, muestra el componente RespuestaRecuperar
         <RespuestaRecuperar 
-          email={email} // Usa el email del estado actual
+          email={email}
           onClose={handleCloseModal} 
         />
       )}

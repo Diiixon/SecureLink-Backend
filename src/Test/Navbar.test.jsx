@@ -4,12 +4,6 @@ import { MemoryRouter } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 
-
-
-
-
-
-
 // --- Mocks ---
 
 // 1. Importa 'animateScroll' (que será el mock)

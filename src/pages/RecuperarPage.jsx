@@ -1,7 +1,8 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import Recuperar from '../components/Recuperar'; // Importamos el componente de tu compañero
+import Recuperar from '../components/Recuperar';
 
+// Página que muestra la sección para recuperar contraseña
 function RecuperarPage() {
   return (
     <>
