@@ -24,5 +24,5 @@ Características Principales
 * **Enrutamiento del Lado del Cliente:** Navegación rápida entre pestañas (vistas) usando `react-router-dom`.
 * **Pruebas Unitarias:** Cobertura de pruebas con **Vitest** para garantizar la estabilidad de la aplicación.
 * **Interfaz React:** Construido con el framework **React** para una UI dinámica y eficiente.
-* **Implemetnacion de mockable.io:** simlacion de api para validar usuario.
+* **Implemetnacion de mockable.io:**Utilizado para simular (mocking) las respuestas de la API durante el desarrollo y las pruebas.
 
