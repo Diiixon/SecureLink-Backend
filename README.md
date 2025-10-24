@@ -1,16 +1,28 @@
-# React + Vite
+El objetivo de securiteLink es desarrollar un ecosistema de seguridad digital integral para proteger a los usuarios de amenazas como phishing, malware y estafas. La solución busca dar control y confianza al usuario al interactuar con enlaces recibidos por SMS, WhatsApp o correo electrónico. Funciona de manera proactiva e inteligente a través de una aplicación móvil y una plataforma web, analizando la seguridad de los enlaces antes, durante y después de que el usuario haga clic. El sistema está diseñado para abordar la vulnerabilidad de los usuarios que no pueden diferenciar enlaces maliciosos de los legítimos, el alto volumen de ataques y los nuevos vectores como los códigos QR fraudulentos.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Integrantes del grupo
 
-Currently, two official plugins are available:
+Dedxon Tapia
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Vicente Rodriguez
 
-## React Compiler
+Descripción técnica
 
-The React Compiler is not enabled on this template. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Expanding the ESLint configuration
+Tecnologías Utilizadas
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* **React:** Biblioteca principal para la construcción de la UI.
+* **Vite:** Herramienta de *bundling* y servidor de desarrollo rápido.
+* **React Router DOM:** Para la gestión de rutas y navegación.
+* **Vitest:** Framework de pruebas unitarias rápido e integrado con Vite.
+
+
+
+Características Principales
+
+* **Arquitectura basada en Componentes:** Vistas construidas de forma modular para facilitar el mantenimiento y la reutilización.
+* **Enrutamiento del Lado del Cliente:** Navegación rápida entre pestañas (vistas) usando `react-router-dom`.
+* **Pruebas Unitarias:** Cobertura de pruebas con **Vitest** para garantizar la estabilidad de la aplicación.
+* **Interfaz React:** Construido con el framework **React** para una UI dinámica y eficiente.
+* **Implemetnacion de mockable.io:** simlacion de api para validar usuario.
+
