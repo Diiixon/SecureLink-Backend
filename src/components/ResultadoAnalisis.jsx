@@ -1,42 +1,62 @@
 import '../style/Analizador.css';
 
 function ResultadoAnalisis({ isLoading, result }) { 
-  if (!isLoading && !result) { // Le dice al componente si el análisis está cargando o no, para no renderizar nada en pantalla si no es necesario
+  if (!isLoading && !result) {
     return null;
   }
 
-  return ( // Muestra el resultado del análisis
-    <div id="resultado-analisis" style={{ display: 'block' }}>
+  const renderResultCard = (item) => {
+    // Determina el color y mensaje basado en el campo 'peligro'
+    const peligro = item.peligro ? item.peligro.toLowerCase() : 'seguro';
+    
+    if (peligro === 'bloqueadas' || peligro === 'malicioso' || item.peligro === 'BLOQUEADAS') {
+      return (
+        <div key={item.linkReportado} id="resultado-fraudulento" className="resultado-card" style={{ display: 'block' }}>
+          <div className="resultado-icono icon-fraudulento">&#10005;</div>
+          <h2>Peligro: Enlace Fraudulento</h2>
+          <p>URL: {item.linkReportado}</p>
+          {item.imitaA && <p>Imita a: {item.imitaA}</p>}
+          <p>Hemos detectado que este sitio es malicioso. Evita interactuar con él.</p>
+        </div>
+      );
+    } else if (peligro === 'sospechosos' || peligro === 'sospechoso' || item.peligro === 'SOSPECHOSOS') {
+      return (
+        <div key={item.linkReportado} id="resultado-sospechoso" className="resultado-card" style={{ display: 'block' }}>
+          <div className="resultado-icono icon-sospechoso">!</div>
+          <h2>Sitio Sospechoso</h2>
+          <p>URL: {item.linkReportado}</p>
+          {item.imitaA && <p>Imita a: {item.imitaA}</p>}
+          <p>Este enlace presenta características inusuales. Te recomendamos no ingresar datos personales.</p>
+        </div>
+      );
+    } else {
+      return (
+        <div key={item.linkReportado} id="resultado-seguro" className="resultado-card" style={{ display: 'block' }}>
+          <div className="resultado-icono icon-seguro">&#10003;</div>
+          <h2>Enlace Seguro</h2>
+          <p>URL: {item.linkReportado}</p>
+          <p>No hemos encontrado ninguna amenaza. Puedes proceder con tranquilidad.</p>
+        </div>
+      );
+    }
+  };
 
-      {isLoading && ( // Si está cargando, muestra un spinner y un mensaja de Analizando...
+  return (
+    <div id="resultado-analisis" style={{ display: 'block' }}>
+      {isLoading && (
         <>
           <div className="spinner" style={{ display: 'block' }}></div>
           <p className="texto-analizando" style={{ display: 'block' }}>Analizando...</p>
         </>
       )}
 
-      { /* El componente revisa cada posible resultado, siempre y cuando No esté cargando */ }
-      {!isLoading && result === 'seguros' && ( // Muestra tarjeta Verde con mensaje de enlace seguro
-        <div id="resultado-seguro" className="resultado-card" style={{ display: 'block' }}>
-          <div className="resultado-icono icon-seguro">&#10003;</div>
-          <h2>Enlace Seguro</h2>
-          <p>No hemos encontrado ninguna amenaza. Puedes proceder con tranquilidad.</p>
-        </div>
-      )}
-
-      {!isLoading && result === 'sospechosos' && ( // Muestra tarjeta Amarilla con mensaje de enlace sospechoso
-        <div id="resultado-sospechoso" className="resultado-card" style={{ display: 'block' }}>
-          <div className="resultado-icono icon-sospechoso">!</div>
-          <h2>Sitio Sospechoso</h2>
-          <p>Este enlace presenta características inusuales. Te recomendamos no ingresar datos personales.</p>
-        </div>
-      )}
-
-      {!isLoading && result === 'bloqueadas' && ( // Muestra tarjeta Roja con mensaje de enlace bloqueado
-        <div id="resultado-fraudulento" className="resultado-card" style={{ display: 'block' }}>
-          <div className="resultado-icono icon-fraudulento">&#10005;</div>
-          <h2>Peligro: Enlace Fraudulento</h2>
-          <p>Hemos detectado que este sitio es malicioso. Evita interactuar con él.</p>
+      {!isLoading && Array.isArray(result) && result.length > 0 && (
+        <div style={{ display: 'block' }}>
+          {result.map((item) => renderResultCard(item))}
+          <div className="resultado-footer" style={{ display: 'block' }}>
+            <p>Resultados revisados por <strong>VirusTotal</strong> y <strong>Google Safe Browsing</strong>.</p>
+            <p className="nota-pequena">Estas comprobaciones ayudan a identificar URL maliciosas, pero no garantizan detección completa.</p>
+          </div>
         </div>
       )}
     </div>

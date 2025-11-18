@@ -107,12 +107,16 @@
 .profile-history th, .profile-history td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid rgba(148, 210, 189, 0.2); }
 .profile-history th { color: #94d2bd; font-weight: 600; }
 .profile-history td { color: #ffffff; }
-.link-text { font-family: monospace; font-size: 0.9rem; }
+.link-text { font-family: monospace; font-size: 0.9rem; color: #e0fbfc; text-decoration: underline; }
+.link-text:hover { color: #ffffff; text-decoration: underline; }
 
-.status-icon { font-size: 1.5rem; font-weight: bold; display: inline-block; width: 25px; text-align: center; }
-.status-danger { color: #ae2012; }
-.status-warning { color: #f1c40f; }
-.status-safe { color: #3498db; }
+.status-icon { font-size: 1.3rem; font-weight: bold; display: inline-block; width: 28px; text-align: center; }
+.status-danger { color: #ff6b6b; } /* rojo claro */
+.status-warning { color: #ffd166; } /* amarillo */
+.status-safe { color: #8ce99a; } /* verde claro */
+
+/* Icono tipo ticket para seguro */
+.status-ticket { color: #8ce99a; font-size: 1.2rem; }
 
 /* Media Queries para diseño responsivo */
 @media (max-width: 1200px) {

@@ -61,7 +61,7 @@ function Analizador() {
         delete headers['Content-Type'];
       } else {
         // Para texto
-        body = JSON.stringify({ text: textToProcess });
+        body = JSON.stringify({ textoAnalizar: textToProcess });
       }
 
       const resp = await fetch(endpoint, {

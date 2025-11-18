@@ -251,3 +251,17 @@ textarea::placeholder {
         gap: 1rem;
     }
 }
+
+/* Footer del bloque de resultados */
+.resultado-footer {
+    margin-top: 1.25rem;
+    color: var(--c-mint);
+    font-size: 0.95rem;
+    text-align: center;
+    opacity: 0.95;
+}
+.resultado-footer p { margin: 0.25rem 0; }
+.resultado-footer .nota-pequena {
+    color: rgba(148, 210, 189, 0.85);
+    font-size: 0.85rem;
+}
