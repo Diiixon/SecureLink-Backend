@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import SuccessModal from './SuccessModal'; 
 
-const API_BASE_URL = "http://demo8589789.mockable.io"; // URL de la API
+// usamos el helper de AuthContext para registrar
+import { useAuth } from '../context/AuthContext';
+
 
 // Componente para el formulario de registro
 function RegisterForm() {
@@ -15,6 +17,7 @@ function RegisterForm() {
     const [passwordError, setPasswordError] = useState(""); // Estado para el mensaje de error de contraseña
     const navigate = useNavigate(); 
     const [isModalVisible, setIsModalVisible] = useState(false); // Estado para controlar la visibilidad del modal
+    const { register } = useAuth();
 
     const handleChange = (e) => { // Función para manejar cambios en los campos del formulario
         const { name, value } = e.target;
@@ -38,20 +41,17 @@ function RegisterForm() {
         setPasswordError(""); 
 
         try {
-            const response = await fetch(`${API_BASE_URL}/register`, { // Realiza una solicitud POST a la API para el registro
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    username: formData.username,
-                    email: formData.email,
-                    password: formData.password,
-                }),
+            const response = await register({
+                username: formData.username,
+                email: formData.email,
+                password: formData.password,
             });
-            const data = await response.json(); // Procesa la respuesta de la API
-            if (response.ok) { 
+
+            if (response.ok) {
                 setIsModalVisible(true);
             } else {
-                alert(data.message || 'Ocurrió un error al registrar.');
+                const data = await response.json().catch(() => ({}));
+                alert(data.message || data.error || 'Ocurrió un error al registrar.');
             }
         } catch (error) {
             console.error('Error de red:', error);

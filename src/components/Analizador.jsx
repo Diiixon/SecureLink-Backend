@@ -4,27 +4,21 @@ import ResultadoAnalisis from './ResultadoAnalisis';
 import '../style/Analizador.css';
 
 function Analizador() {
-  //Obtiene el usuario actual y la funcion de login del contexto de autenticacion
-  const { currentUser, login } = useAuth();
+  const { currentUser, getAuthHeaders, token } = useAuth();
 
   // Estados para el texto a analizar
   const [textToAnalyze, setTextToAnalyze] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
+  const [errorMsg, setErrorMsg] = useState('');
   
   // Estados para el archivo
   const [selectedFileName, setSelectedFileName] = useState('Ningún archivo seleccionado');
   const [fileContent, setFileContent] = useState('');
 
-  //estado para el error en caso de no haber texto o archivo
-  const [error, setError] = useState('');
-
-  //función para que lea el archivo Y LIMPiE EL ERROR
   const handleFileChange = (event) => {
-
-    // se verifica si se ha seleccionado un archivo (0 significa ninguno) (1 o mas significa archivos)
     if (event.target.files.length > 0) {
-      if (error) setError(''); // Limpia el error si se selecciona un archivo
+      if (errorMsg) setErrorMsg('');
       const file = event.target.files[0];
       setSelectedFileName(file.name);
 
@@ -33,81 +27,71 @@ function Analizador() {
         setFileContent(e.target.result);
       };
       reader.readAsText(file);
-
     } else {
       setSelectedFileName('Ningún archivo seleccionado');
       setFileContent('');
     }
   };
 
-  //funcion para simular el analisis del texto o archivo
-  const handleAnalizar = () => {
+  const handleAnalizar = async () => {
     const textToProcess = textToAnalyze.trim() || fileContent.trim();
 
     if (!textToProcess) {
-      // Si no hay texto ni archivo, muestra un error y no procede
-      setError("Por favor, ingresa un enlace o selecciona un archivo para analizar.");
+      setErrorMsg("Por favor, ingresa un enlace o selecciona un archivo para analizar.");
       return;
     }
 
-    setError(''); // se limpia  el error si la validación pasa
+    setErrorMsg('');
     setIsLoading(true);
     setAnalysisResult(null);
 
-
-    // Inicia un temporizador para simular el tiempo de análisis
-    setTimeout(() => {
-      const resultados = ['seguros', 'sospechosos', 'bloqueadas']; //posibles resultados
-      const randomKey = resultados[Math.floor(Math.random() * resultados.length)]; //selecciona uno al azar
+    try {
+      const base = import.meta.env.VITE_ANALYSIS_URL || 'http://localhost:8081';
+      const endpoint = fileContent ? `${base}/api/v1/analysis/scan-file` : `${base}/api/v1/analysis/scan-text`;
       
-      // se crea un reporte nuevo basado en el resultado aleatorio
-      let peligro = 'N/A';
-      if (randomKey === 'seguros') peligro = 'Ninguno';
-      else if (randomKey === 'sospechosos') peligro = 'Scam';
-      else if (randomKey === 'bloqueadas') peligro = 'Phishing';
+      const headers = getAuthHeaders();
 
-      //nuevo reporte para agregar al historial del usuario
-      const newReport = {
-        status: randomKey === 'bloqueadas' ? 'danger' : randomKey === 'sospechosos' ? 'warning' : 'safe',
-        link: textToProcess,
-        peligro: peligro,
-        fecha: new Date().toISOString(),
-        imita: 'Sitio Desconocido'
-      };
-      
-      /*
-
-      //Localstorage no Implemetado ya que se simula con api  mockable.io
-
-      const users = JSON.parse(localStorage.getItem('users')) || [];
-      const userIndex = users.findIndex(user => user.email === currentUser.email);
-
-      if (userIndex !== -1) {
-        const updatedUser = JSON.parse(JSON.stringify(users[userIndex]));
-        updatedUser.reportsCount += 1;
-        updatedUser.stats[randomKey] += 1;
-        updatedUser.history.unshift(newReport);
-        users[userIndex] = updatedUser;
-        localStorage.setItem('users', JSON.stringify(users));
-        login(updatedUser);
-
-        const globalStats = JSON.parse(localStorage.getItem('globalStats')) || { totalReports: 0, seguros: 0, sospechosos: 0, bloqueadas: 0 };
-        globalStats.totalReports += 1;
-        globalStats[randomKey] += 1;
-        localStorage.setItem('globalStats', JSON.stringify(globalStats));
+      let body;
+      if (fileContent) {
+        // Para archivo, usar FormData
+        const formData = new FormData();
+        formData.append('file', new Blob([textToProcess], { type: 'text/plain' }));
+        body = formData;
+        // Eliminar Content-Type si es FormData (el navegador lo maneja)
+        delete headers['Content-Type'];
+      } else {
+        // Para texto
+        body = JSON.stringify({ text: textToProcess });
       }
-      */
 
+      const resp = await fetch(endpoint, {
+        method: 'POST',
+        headers,
+        body,
+      });
+
+      const responseData = await resp.json();
+
+      if (resp.status === 400) {
+        // Error del cliente - mostrar mensaje amigable
+        setErrorMsg(responseData.detalle || responseData.mensaje || responseData.error || 'Error en la solicitud');
+      } else if (!resp.ok) {
+        // Otros errores
+        setErrorMsg(responseData.message || responseData.error || 'Error al analizar');
+      } else {
+        // Éxito
+        setAnalysisResult(Array.isArray(responseData) ? responseData : [responseData]);
+      }
+    } catch (e) {
+      console.error('Error en análisis:', e);
+      setErrorMsg('No se pudo conectar al servidor');
+    } finally {
       setIsLoading(false);
-      setAnalysisResult(randomKey);
-      
       setTextToAnalyze('');
       setFileContent('');
       setSelectedFileName('Ningún archivo seleccionado');
       document.getElementById('subir-archivo').value = '';
-
-      //Timepo antes de mostrar el resultado
-    }, 700);
+    }
   };
 
   return (
@@ -119,15 +103,13 @@ function Analizador() {
           id="texto-analizar" 
           placeholder="Ingresa o Pega Aquí el mensaje o link..."
           value={textToAnalyze}
-          //cada cambio en el textarea, actualiza el estado y limpia el error si existe
           onChange={(e) => {
             setTextToAnalyze(e.target.value);
-            if (error) setError('');
+            if (errorMsg) setErrorMsg('');
           }}
         />
         
-        {/*Mostramos el error aquí si existe*/}
-        {error && <p style={{ color: 'red', marginTop: '5px' }}>{error}</p>}
+        {errorMsg && <p style={{ color: 'red', marginTop: '5px' }}>{errorMsg}</p>}
 
         <div className="analizador-acciones">
           <div className="grupo-subir-archivo">
