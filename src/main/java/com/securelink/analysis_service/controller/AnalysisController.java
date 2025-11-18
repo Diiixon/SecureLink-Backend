@@ -42,10 +42,11 @@ public class AnalysisController {
      */
     @PostMapping("/scan-text")
     public ResponseEntity<List<AnalysisResponse>> analyzeText(
-            @RequestBody AnalysisRequest request) {
-        
-        // Delega todo el trabajo al servicio
-        List<AnalysisResponse> response = analysisService.analyzeText(request.textoAnalizar());
+            @RequestBody AnalysisRequest request,
+            @RequestHeader(value = "Authorization", required = false) String authorization) {
+
+        // Delega todo el trabajo al servicio, pasando el token si existe
+        List<AnalysisResponse> response = analysisService.analyzeText(request.textoAnalizar(), authorization);
         return ResponseEntity.ok(response);
     }
 
@@ -56,17 +57,16 @@ public class AnalysisController {
      */
     @PostMapping(value = "/scan-file", consumes = "multipart/form-data")
     public ResponseEntity<List<AnalysisResponse>> analyzeFile(
-            @RequestParam("file") MultipartFile file) { // Recibe el archivo
+            @RequestParam("file") MultipartFile file,
+            @RequestHeader(value = "Authorization", required = false) String authorization) { // Recibe el archivo
         
         try {
-            // Delega el trabajo al servicio
-            List<AnalysisResponse> results = analysisService.analyzeFile(file);
+            // Delega el trabajo al servicio, pasando el token si existe
+            List<AnalysisResponse> results = analysisService.analyzeFile(file, authorization);
             return ResponseEntity.ok(results);
             
         } catch (IOException e) {
             // Manejo de error si no se puede leer el archivo
-            // (Aunque nuestras excepciones personalizadas probablemente 
-            // ya manejaron esto, es una buena práctica)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null); 
         }

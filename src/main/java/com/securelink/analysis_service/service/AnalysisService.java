@@ -40,6 +40,9 @@ public class AnalysisService {
 
     private final WebClient webClient;
     private final BrandDetectionService brandDetectionService;
+    private final com.securelink.analysis_service.service.ReportService reportService;
+    private final com.securelink.analysis_service.util.JwtUtil jwtUtil;
+    private final com.securelink.analysis_service.repository.UserRepository userRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(AnalysisService.class);
 
@@ -52,24 +55,49 @@ public class AnalysisService {
     // (El Constructor se mantiene igual)
     @Autowired
     public AnalysisService(WebClient webClient,
-            BrandDetectionService brandDetectionService) {
+            BrandDetectionService brandDetectionService,
+            com.securelink.analysis_service.service.ReportService reportService,
+            com.securelink.analysis_service.util.JwtUtil jwtUtil,
+            com.securelink.analysis_service.repository.UserRepository userRepository) {
         this.webClient = webClient;
         this.brandDetectionService = brandDetectionService;
+        this.reportService = reportService;
+        this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
     }
 
     // (analyzeText y analyzeFile se mantienen igual)
-    public List<AnalysisResponse> analyzeText(String text) {
+    public List<AnalysisResponse> analyzeText(String text, String authorizationHeader) {
         List<String> urls = extractAllUrls(text);
         if (urls.isEmpty()) {
             throw new UrlNotFoundException("No se encontró una URL válida en el texto.");
         }
-        return Flux.fromIterable(urls)
+
+        Long userId = resolveUserIdFromAuthHeader(authorizationHeader);
+
+        List<AnalysisResponse> responses = Flux.fromIterable(urls)
                 .flatMap(this::analyzeSingleUrl)
                 .collectList()
                 .block();
+
+        // Si hay usuario, guardamos cada resultado como report
+        if (userId != null && responses != null) {
+            for (AnalysisResponse r : responses) {
+                com.securelink.analysis_service.model.Report report = new com.securelink.analysis_service.model.Report();
+                report.setUserId(userId);
+                report.setUrl(r.linkReportado());
+                report.setPeligro(r.peligro());
+                report.setImitaA(r.imitaA());
+                // Guardamos detalles como JSON simple
+                report.setDetalles(r.detalles().toString());
+                reportService.save(report);
+            }
+        }
+
+        return responses;
     }
 
-    public List<AnalysisResponse> analyzeFile(MultipartFile file) throws IOException {
+    public List<AnalysisResponse> analyzeFile(MultipartFile file, String authorizationHeader) throws IOException {
         if (file == null || file.isEmpty()) {
             throw new BadRequestException("El archivo está vacío o es nulo.");
         }
@@ -78,10 +106,33 @@ public class AnalysisService {
         if (urls.isEmpty()) {
             throw new UrlNotFoundException("No se encontraron URLs en el archivo.");
         }
-        return Flux.fromIterable(urls)
+        Long userId = resolveUserIdFromAuthHeader(authorizationHeader);
+
+        List<AnalysisResponse> responses = Flux.fromIterable(urls)
                 .flatMap(this::analyzeSingleUrl)
                 .collectList()
                 .block();
+
+        if (userId != null && responses != null) {
+            for (AnalysisResponse r : responses) {
+                com.securelink.analysis_service.model.Report report = new com.securelink.analysis_service.model.Report();
+                report.setUserId(userId);
+                report.setUrl(r.linkReportado());
+                report.setPeligro(r.peligro());
+                report.setImitaA(r.imitaA());
+                report.setDetalles(r.detalles().toString());
+                reportService.save(report);
+            }
+        }
+
+        return responses;
+    }
+
+    private Long resolveUserIdFromAuthHeader(String authorizationHeader) {
+        if (authorizationHeader == null) return null;
+        String email = jwtUtil.extractEmail(authorizationHeader);
+        if (email == null) return null;
+        return userRepository.findByEmail(email).map(u -> u.getId()).orElse(null);
     }
 
     private Mono<AnalysisResponse> analyzeSingleUrl(String originalUrl) {
