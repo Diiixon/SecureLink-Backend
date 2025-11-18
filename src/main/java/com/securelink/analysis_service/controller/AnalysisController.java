@@ -24,6 +24,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/v1/analysis") // Ruta base para todos los endpoints en esta clase
+@CrossOrigin(origins = "*")
 public class AnalysisController {
 
     // Inyectamos el servicio que tiene la lógica de negocio
@@ -37,14 +38,14 @@ public class AnalysisController {
     /**
      * ENDPOINT 1: Analiza texto simple (enviado como JSON).
      * URL: POST /api/v1/analysis/scan-text
-     * Body: { "textToScan": "..." }
+     * Body: { "textoAnalizar": "..." }
      */
     @PostMapping("/scan-text")
-    public ResponseEntity<AnalysisResponse> analyzeText(
+    public ResponseEntity<List<AnalysisResponse>> analyzeText(
             @RequestBody AnalysisRequest request) {
         
         // Delega todo el trabajo al servicio
-        AnalysisResponse response = analysisService.analyzeText(request.textoAnalizar());
+        List<AnalysisResponse> response = analysisService.analyzeText(request.textoAnalizar());
         return ResponseEntity.ok(response);
     }
 

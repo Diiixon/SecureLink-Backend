@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public class AnalysisService {
 
     // (Regex, etc. se mantienen igual)
-    private static final String URL_REGEX = "(https?|ftp)://[\\-A-Za-z0-9+&@#/%?=~_|!:,.;]*[\\-A-Za-z0-9+&@#/%=~_|]";
+    private static final String URL_REGEX = "(?i)((?:https?://)?(?:www\\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[a-zA-Z]{2,6}\\b(?:[-a-zA-Z0-9@:%_+.~#?&//=]*))";
 
     private final WebClient webClient;
     private final BrandDetectionService brandDetectionService;
@@ -58,12 +58,15 @@ public class AnalysisService {
     }
 
     // (analyzeText y analyzeFile se mantienen igual)
-    public AnalysisResponse analyzeText(String text) {
-        String url = extractFirstUrl(text);
-        if (url == null) {
+    public List<AnalysisResponse> analyzeText(String text) {
+        List<String> urls = extractAllUrls(text);
+        if (urls.isEmpty()) {
             throw new UrlNotFoundException("No se encontró una URL válida en el texto.");
         }
-        return analyzeSingleUrl(url).block();
+        return Flux.fromIterable(urls)
+                .flatMap(this::analyzeSingleUrl)
+                .collectList()
+                .block();
     }
 
     public List<AnalysisResponse> analyzeFile(MultipartFile file) throws IOException {
@@ -81,19 +84,37 @@ public class AnalysisService {
                 .block();
     }
 
-    // (analyzeSingleUrl se mantiene igual)
-    private Mono<AnalysisResponse> analyzeSingleUrl(String url) {
-        Mono<String> googleResult = callGoogleSafeBrowsing(url);
-        Mono<String> virusTotalResult = callVirusTotal(url);
-        String brandImpersonated = brandDetectionService.detectImpersonation(url);
+    private Mono<AnalysisResponse> analyzeSingleUrl(String originalUrl) {
+        // Normaliza la URL para asegurar que tenga un esquema antes de analizarla
+        String normalizedUrl = normalizeUrl(originalUrl);
+
+        Mono<String> googleResult = callGoogleSafeBrowsing(normalizedUrl);
+        Mono<String> virusTotalResult = callVirusTotal(normalizedUrl);
+        String brandImpersonated = brandDetectionService.detectImpersonation(normalizedUrl);
 
         return Mono.zip(googleResult, virusTotalResult)
                 .map(tuple -> {
                     Map<String, String> details = Map.of(
                             "GoogleSafeBrowsing", tuple.getT1(),
                             "VirusTotal", tuple.getT2());
-                    return consolidateResults(url, details, brandImpersonated);
+                    // Devuelve la URL original en la respuesta para el usuario
+                    return consolidateResults(originalUrl, details, brandImpersonated);
                 });
+    }
+
+    /**
+     * Normaliza una URL para asegurar que tenga un esquema (http/https).
+     * Si no lo tiene, le añade "https://".
+     */
+    private String normalizeUrl(String url) {
+        if (url == null || url.trim().isEmpty()) {
+            return url;
+        }
+        String trimmedUrl = url.trim();
+        if (!trimmedUrl.toLowerCase().startsWith("http://") && !trimmedUrl.toLowerCase().startsWith("https://")) {
+            return "https://" + trimmedUrl;
+        }
+        return trimmedUrl;
     }
 
     // --- ¡MÉTODOS ACTUALIZADOS! ---
@@ -194,6 +215,16 @@ public class AnalysisService {
 
         // --- LÓGICA CORREGIDA ---
 
+        // 0. Manejo de URL inválida desde BrandDetectionService
+        if ("Invalid URL format".equals(imitaA)) {
+            return new AnalysisResponse(
+                url,
+                "invalido", // O "error", según lo que el frontend espere para URLs mal formadas
+                "Formato de URL inválido",
+                results
+            );
+        }
+
         // 1. NUESTRA LÓGICA DE MARCA TIENE LA MÁXIMA PRIORIDAD
         if (!imitaA.equals("N/A")) {
             // Si nuestro BrandDetectionService encontró una suplantación
@@ -217,9 +248,24 @@ public class AnalysisService {
             // Si `finalVerdict` sigue siendo "Ninguno", `imitaA` se queda como "N/A" (correcto).
         }
 
+        // Mapeo del veredicto final a los valores que el frontend espera
+        String frontendVerdict;
+        switch (finalVerdict) {
+            case "Phishing":
+            case "Malware":
+                frontendVerdict = "bloqueadas";
+                break;
+            case "Scam":
+                frontendVerdict = "sospechosos";
+                break;
+            default: // "Ninguno" y cualquier otro caso
+                frontendVerdict = "seguros";
+                break;
+        }
+
         return new AnalysisResponse(
             url,             // linkReportado
-            finalVerdict,    // peligro
+            frontendVerdict, // peligro (¡AHORA TRADUCIDO!)
             imitaA,          // imitaA
             results          // detalles
         );
