@@ -10,14 +10,13 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
     private final UserRepository userRepository;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     /**
      * Bean 1: UserDetailsService
@@ -30,15 +29,7 @@ public class ApplicationConfig {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
     }
 
-    /**
-     * Bean 2: PasswordEncoder
-     * Le dice a Spring que use BCrypt para encriptar las contraseñas.
-     * El AuthService usará este bean para encriptar la contraseña al registrarse.
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    // PasswordEncoder is defined in SecurityConfig and injected here.
 
     /**
      * Bean 3: AuthenticationProvider
@@ -47,8 +38,8 @@ public class ApplicationConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         // --- CAMBIO AQUÍ ---
-        // Pasamos el passwordEncoder() directamente al constructor
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(passwordEncoder());
+        // Usamos el PasswordEncoder inyectado (definido en SecurityConfig)
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(passwordEncoder);
         // Y luego solo configuramos el userDetailsService
         authProvider.setUserDetailsService(userDetailsService());
         // --- FIN DEL CAMBIO ---
