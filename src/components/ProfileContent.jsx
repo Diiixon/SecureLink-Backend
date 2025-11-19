@@ -44,9 +44,8 @@ function ProfileContent() {
     return <div className="profile-container"><p>Por favor inicia sesión para ver tu perfil.</p></div>;
   }
 
-  // Fechas de registro / última conexión (si están disponibles en currentUser)
+  // Fechas de registro (si están disponibles en currentUser)
   const memberSinceDate = currentUser?.memberSince ? new Date(currentUser.memberSince).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' }) : '—';
-  const lastLoginDate = currentUser?.lastLogin ? new Date(currentUser.lastLogin).toLocaleString('es-ES', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
 
   // Estadísticas: contar reportes por categoría
   const categorize = (r) => {
@@ -64,14 +63,13 @@ function ProfileContent() {
 
   return (
     <div className="profile-container">
-      {/* Mostrar nombre de usuario preferente: nombre registrado o el prefijo del email */}
-      <h1 className="welcome-message">Hola bienvenido: {currentUser.nombre || (currentUser.email ? currentUser.email.split('@')[0] : currentUser.email)}</h1>
+      {/* Mostrar nombre de usuario en el título de bienvenida */}
+      <h1 className="welcome-message">Hola bienvenido: {currentUser.nombre || (currentUser.email ? currentUser.email.split('@')[0] : 'Usuario')}</h1>
       <div className="profile-grid">
         <div className="profile-card profile-user-card">
           <img src={profilePhoto} alt="Foto de Perfil" className="profile-photo" />
           <div className="profile-user-info">
-            <h2 className="profile-username">{currentUser.nombre || (currentUser.email ? currentUser.email.split('@')[0] : currentUser.email)}</h2>
-            <p className="profile-member-since">Usuario desde: {memberSinceDate}</p>
+            <h2 className="profile-username">{currentUser.email}</h2>
           </div>
         </div>
         <div className="profile-card profile-reports-count">
@@ -119,7 +117,7 @@ function ProfileContent() {
                       <tr key={r.id}>
                         <td><span className={`status-icon ${statusClass}`}>{icon}</span></td>
                         <td><a className="link-text" href={r.url} target="_blank" rel="noreferrer">{r.url}</a></td>
-                        <td>{r.peligro || 'N/A'}</td>
+                        <td>{r.tipoAmenaza || 'Ninguna'}</td>
                         <td>{r.createdAt ? new Date(r.createdAt).toLocaleDateString('es-ES') : '—'}</td>
                         <td>{r.imitaA || '—'}</td>
                       </tr>
@@ -131,10 +129,6 @@ function ProfileContent() {
               </tbody>
             </table>
           </div>
-        </div>
-        <div className="profile-card profile-last-connection">
-          <h3>Última Conexión</h3>
-          <p>{lastLoginDate}</p>
         </div>
       </div>
     </div>
