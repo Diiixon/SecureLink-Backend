@@ -87,6 +87,7 @@ public class AnalysisService {
                 report.setUserId(userId);
                 report.setUrl(r.linkReportado());
                 report.setPeligro(r.peligro());
+                report.setTipoAmenaza(r.tipoAmenaza());
                 report.setImitaA(r.imitaA());
                 // Guardamos detalles como JSON simple
                 report.setDetalles(r.detalles().toString());
@@ -119,6 +120,7 @@ public class AnalysisService {
                 report.setUserId(userId);
                 report.setUrl(r.linkReportado());
                 report.setPeligro(r.peligro());
+                report.setTipoAmenaza(r.tipoAmenaza());
                 report.setImitaA(r.imitaA());
                 report.setDetalles(r.detalles().toString());
                 reportService.save(report);
@@ -271,6 +273,7 @@ public class AnalysisService {
             return new AnalysisResponse(
                 url,
                 "invalido", // O "error", según lo que el frontend espere para URLs mal formadas
+                "Error",    // tipoAmenaza
                 "Formato de URL inválido",
                 results
             );
@@ -317,6 +320,7 @@ public class AnalysisService {
         return new AnalysisResponse(
             url,             // linkReportado
             frontendVerdict, // peligro (¡AHORA TRADUCIDO!)
+            finalVerdict,    // tipoAmenaza (Phishing, Malware, Scam, Ninguno)
             imitaA,          // imitaA
             results          // detalles
         );

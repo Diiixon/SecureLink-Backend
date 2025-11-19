@@ -20,6 +20,9 @@ public class Report {
     @Column(name = "peligro")
     private String peligro;
 
+    @Column(name = "tipo_amenaza")
+    private String tipoAmenaza;
+
     @Column(name = "imita_a")
     private String imitaA;
 
@@ -40,6 +43,9 @@ public class Report {
 
     public String getPeligro() { return peligro; }
     public void setPeligro(String peligro) { this.peligro = peligro; }
+
+    public String getTipoAmenaza() { return tipoAmenaza; }
+    public void setTipoAmenaza(String tipoAmenaza) { this.tipoAmenaza = tipoAmenaza; }
 
     public String getImitaA() { return imitaA; }
     public void setImitaA(String imitaA) { this.imitaA = imitaA; }

@@ -6,6 +6,7 @@ public record AnalysisResponse(
 
     String linkReportado,
     String peligro,
+    String tipoAmenaza,
     String imitaA,
     Map<String, String> detalles) {
 
