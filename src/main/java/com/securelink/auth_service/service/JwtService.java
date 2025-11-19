@@ -1,5 +1,6 @@
 package com.securelink.auth_service.service;
 
+import com.securelink.auth_service.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 // ¡YA NO SE USA! import io.jsonwebtoken.SignatureAlgorithm;
@@ -24,7 +25,15 @@ public class JwtService {
     private static final long JWT_EXPIRATION_MS = 1000 * 60 * 60 * 24; // 24 horas
 
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        Map<String, Object> extraClaims = new HashMap<>();
+        // Agregar el username real como claim si el UserDetails es de tipo User
+        if (userDetails instanceof User) {
+            User user = (User) userDetails;
+            String realUsername = user.getRealUsername();
+            extraClaims.put("username", realUsername);
+            extraClaims.put("name", realUsername);
+        }
+        return generateToken(extraClaims, userDetails);
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {

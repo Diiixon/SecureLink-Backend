@@ -54,6 +54,11 @@ public class User implements UserDetails{
         return this.email; // Usaremos el EMAIL como "username" principal para iniciar sesión
     }
 
+    // Método adicional para obtener el nombre de usuario real (no el email)
+    public String getRealUsername() {
+        return this.username;
+    }
+
     // Los siguientes métodos los dejamos en 'true' por ahora
     @Override
     public boolean isAccountNonExpired() {
