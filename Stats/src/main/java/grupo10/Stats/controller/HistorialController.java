@@ -31,4 +31,10 @@ public class HistorialController {
         return servicio.obtenerDistribucion();
     }
     
+    // GET http://localhost:8082/api/stats/recientes
+    @GetMapping("/recientes")
+    public List<?> getRecientes(@RequestParam(value = "limit", required = false, defaultValue = "5") int limit) {
+        return servicio.obtenerRecientes(limit);
+    }
+    
 }
