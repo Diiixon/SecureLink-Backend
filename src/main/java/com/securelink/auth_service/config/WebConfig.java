@@ -7,14 +7,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    /*
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Permite CORS en todas las rutas
-                .allowedOrigins("http://localhost:5173") // El origen de tu app de React
+                .allowedOrigins("*") // Permite peticiones desde cualquier origen (incluye apps Android)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Métodos permitidos
                 .allowedHeaders("*") // Todos los headers permitidos
-                .allowCredentials(true); // Permite credenciales (cookies, etc.)
+                .allowCredentials(false); // Debe ser false cuando allowedOrigins es "*"
     }
-    */
 }
