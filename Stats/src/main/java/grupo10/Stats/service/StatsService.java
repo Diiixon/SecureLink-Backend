@@ -1,6 +1,6 @@
 package grupo10.Stats.service;
 
-import grupo10.Stats.dto.reporte;
+import grupo10.Stats.dto.Reporte;
 import grupo10.Stats.repository.AnalisisRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,13 +13,16 @@ public class StatsService {
     @Autowired
     private AnalisisRepository repositorio;
 
-    // Resumen general: total, maliciosos, seguros
+    /**
+     * Resumen general: total, maliciosos (bloqueadas + sospechosos), seguros
+     * La BD usa valores en minúsculas: "seguros", "bloqueadas", "sospechosos"
+     */
     public Map<String, Object> obtenerResumenGeneral() {
         Map<String, Object> resumen = new HashMap<>();
 
         long total = repositorio.count();
-        long maliciosos = repositorio.countByPeligro("MALICIOSO");
-        long seguros = total - maliciosos;
+        long seguros = repositorio.countByPeligro("seguros");
+        long maliciosos = total - seguros; // bloqueadas + sospechosos + cualquier otro no-seguro
 
         resumen.put("total", total);
         resumen.put("maliciosos", maliciosos);
@@ -45,13 +48,20 @@ public class StatsService {
         return lista;
     }
 
-    // Obtener los últimos N reportes (por defecto 5)
-    public List<reporte> obtenerRecientes(int limit) {
-        List<reporte> recientes = repositorio.findTop5ByOrderByCreatedAtDesc();
-        if (limit <= 0 || limit >= recientes.size()) {
+    /**
+     * Obtiene los últimos N reportes ordenados por fecha de creación
+     * 
+     * @param limit Número de reportes a obtener
+     * @return Lista de reportes recientes
+     */
+    public List<Reporte> obtenerRecientes(int limit) {
+        List<Reporte> recientes = repositorio.findTop5ByOrderByCreatedAtDesc();
+        
+        // Si hay menos reportes que el límite o el límite es inválido, retornar todos
+        if (recientes.isEmpty() || limit <= 0 || limit >= recientes.size()) {
             return recientes;
         }
+        
         return recientes.subList(0, limit);
     }
-
 }

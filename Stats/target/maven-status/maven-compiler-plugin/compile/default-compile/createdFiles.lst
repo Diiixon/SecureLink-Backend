@@ -1,0 +1,7 @@
+grupo10\Stats\controller\HistorialController.class
+grupo10\Stats\repository\AnalisisRepository.class
+grupo10\Stats\dto\Reporte.class
+grupo10\Stats\service\StatsService.class
+grupo10\Stats\MicroservicioStatsApplication.class
+grupo10\Stats\config\CorsConfig.class
+grupo10\Stats\exception\GlobalExceptionHandler.class
