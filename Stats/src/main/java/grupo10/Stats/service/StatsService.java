@@ -64,4 +64,72 @@ public class StatsService {
         
         return recientes.subList(0, limit);
     }
+
+    // ========== Métodos para estadísticas por usuario ==========
+
+    /**
+     * Resumen de análisis de un usuario específico
+     * Para gráfico de torta con datos del usuario
+     * 
+     * @param userId ID del usuario
+     * @return Map con total, maliciosos y seguros del usuario
+     */
+    public Map<String, Object> obtenerResumenPorUsuario(Long userId) {
+        Map<String, Object> resumen = new HashMap<>();
+
+        long total = repositorio.countByUserId(userId);
+        long seguros = repositorio.countByUserIdAndPeligro(userId, "seguros");
+        long maliciosos = total - seguros; // bloqueadas + sospechosos del usuario
+
+        resumen.put("total", total);
+        resumen.put("maliciosos", maliciosos);
+        resumen.put("seguros", seguros);
+
+        return resumen;
+    }
+
+    /**
+     * Distribución de análisis por estado para un usuario específico
+     * Para gráfico de torta detallado del usuario
+     * 
+     * @param userId ID del usuario
+     * @return Lista de objetos con estado y cantidad del usuario
+     */
+    public List<Map<String, Object>> obtenerDistribucionPorUsuario(Long userId) {
+        List<Map<String, Object>> lista = new ArrayList<>();
+
+        List<Object[]> rows = repositorio.obtenerDistribucionPorPeligroYUsuario(userId);
+        for (Object[] row : rows) {
+            String estado = (row[0] == null) ? "UNKNOWN" : row[0].toString();
+            Number cantidad = (Number) row[1];
+            Map<String, Object> item = new HashMap<>();
+            item.put("estado", estado);
+            item.put("cantidad", cantidad.longValue());
+            lista.add(item);
+        }
+
+        return lista;
+    }
+
+    /**
+     * Comparación entre estadísticas del usuario y totales globales
+     * Para gráfico de barras comparativo
+     * 
+     * @param userId ID del usuario
+     * @return Map con datos del usuario y totales globales
+     */
+    public Map<String, Object> obtenerComparativaUsuarioVsGlobal(Long userId) {
+        Map<String, Object> comparativa = new HashMap<>();
+
+        // Datos del usuario
+        Map<String, Object> datosUsuario = obtenerResumenPorUsuario(userId);
+        
+        // Datos globales
+        Map<String, Object> datosGlobales = obtenerResumenGeneral();
+
+        comparativa.put("usuario", datosUsuario);
+        comparativa.put("global", datosGlobales);
+
+        return comparativa;
+    }
 }

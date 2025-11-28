@@ -63,4 +63,57 @@ public class HistorialController {
         List<Reporte> recientes = servicio.obtenerRecientes(limit);
         return ResponseEntity.ok(recientes);
     }
+
+    // ========== Endpoints para estadísticas por usuario ==========
+
+    /**
+     * Obtiene resumen de análisis de un usuario específico
+     * Para gráfico de torta del usuario (solo sus URLs analizadas)
+     * 
+     * @param userId ID del usuario
+     * @return Map con total, maliciosos y seguros del usuario
+     */
+    @GetMapping("/usuario/{userId}/resumen")
+    public ResponseEntity<Map<String, Object>> getResumenUsuario(@PathVariable Long userId) {
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("El userId debe ser un número positivo válido");
+        }
+        
+        Map<String, Object> resumen = servicio.obtenerResumenPorUsuario(userId);
+        return ResponseEntity.ok(resumen);
+    }
+
+    /**
+     * Obtiene distribución detallada de análisis de un usuario
+     * Para gráfico de torta detallado del usuario
+     * 
+     * @param userId ID del usuario
+     * @return Lista con estado y cantidad de URLs por estado
+     */
+    @GetMapping("/usuario/{userId}/distribucion")
+    public ResponseEntity<List<Map<String, Object>>> getDistribucionUsuario(@PathVariable Long userId) {
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("El userId debe ser un número positivo válido");
+        }
+        
+        List<Map<String, Object>> distribucion = servicio.obtenerDistribucionPorUsuario(userId);
+        return ResponseEntity.ok(distribucion);
+    }
+
+    /**
+     * Obtiene comparación entre el usuario y el total global
+     * Para gráfico de barras comparativo (usuario vs global)
+     * 
+     * @param userId ID del usuario
+     * @return Map con datos del usuario y datos globales
+     */
+    @GetMapping("/usuario/{userId}/comparativa")
+    public ResponseEntity<Map<String, Object>> getComparativaUsuarioVsGlobal(@PathVariable Long userId) {
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("El userId debe ser un número positivo válido");
+        }
+        
+        Map<String, Object> comparativa = servicio.obtenerComparativaUsuarioVsGlobal(userId);
+        return ResponseEntity.ok(comparativa);
+    }
 }
