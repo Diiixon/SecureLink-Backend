@@ -12,5 +12,7 @@ import lombok.NoArgsConstructor;
 public class AuthResponse {
 
     private String token; // Aquí irá el JWT
+    private Long userId;  // ID del usuario autenticado
+    private String username; // Nombre de usuario
     
 }

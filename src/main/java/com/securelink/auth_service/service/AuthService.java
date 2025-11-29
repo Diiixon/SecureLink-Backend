@@ -45,9 +45,11 @@ public class AuthService {
         // 3. Guardar el usuario en la base de datos
         userRepository.save(user);
 
-        // 4. Generar y devolver un token de autenticación
+        // 4. Generar y devolver un token de autenticación con userId
         var jwtToken = jwtService.generateToken(user);
         return AuthResponse.builder()
+                .userId(user.getId())
+                .username(user.getRealUsername()) // Usa el username real, no el email
                 .token(jwtToken)
                 .build();
     }
@@ -69,10 +71,12 @@ public class AuthService {
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new IllegalStateException("Usuario no encontrado después de autenticación."));
 
-        // 3. Generar y devolver un token
+        // 3. Generar y devolver un token con userId
         var jwtToken = jwtService.generateToken(user);
         return AuthResponse.builder()
                 .token(jwtToken)
+                .userId(user.getId())
+                .username(user.getRealUsername()) // Usa el username real, no el email
                 .build();
     }
     

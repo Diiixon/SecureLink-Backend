@@ -26,12 +26,13 @@ public class JwtService {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
-        // Agregar el username real como claim si el UserDetails es de tipo User
+        // Agregar el username y userId como claims si el UserDetails es de tipo User
         if (userDetails instanceof User) {
             User user = (User) userDetails;
             String realUsername = user.getRealUsername();
             extraClaims.put("username", realUsername);
             extraClaims.put("name", realUsername);
+            extraClaims.put("userId", user.getId()); // ⭐ Agregamos el ID del usuario
         }
         return generateToken(extraClaims, userDetails);
     }
@@ -61,6 +62,20 @@ public class JwtService {
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    /**
+     * Extrae el userId del token JWT
+     */
+    public Long extractUserId(String token) {
+        Claims claims = extractAllClaims(token);
+        Object userIdObj = claims.get("userId");
+        if (userIdObj instanceof Integer) {
+            return ((Integer) userIdObj).longValue();
+        } else if (userIdObj instanceof Long) {
+            return (Long) userIdObj;
+        }
+        return null;
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
