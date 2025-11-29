@@ -46,7 +46,7 @@ function Analizador() {
     setAnalysisResult(null);
 
     try {
-      const base = import.meta.env.VITE_ANALYSIS_URL || 'http://localhost:8081';
+      const base = import.meta.env.VITE_ANALYSIS_URL;
       const endpoint = fileContent ? `${base}/api/v1/analysis/scan-file` : `${base}/api/v1/analysis/scan-text`;
       
       const headers = getAuthHeaders();
