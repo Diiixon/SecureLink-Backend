@@ -2,7 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 
 export const AuthContext = createContext();
 
-//hook para usar el contexto de autenticacion
+// Hook para usar el contexto de autenticación
 export const useAuth = () => {
   return useContext(AuthContext);
 };
@@ -25,11 +25,14 @@ function decodeJwt(token) {
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => localStorage.getItem('token'));
+  
+  // 1. CORRECCIÓN EN EL ESTADO INICIAL
   const [currentUser, setCurrentUser] = useState(() => {
     const t = localStorage.getItem('token');
     if (!t) return null;
     const payload = decodeJwt(t);
     return {
+      id: payload?.userId || null, // <--- IMPORTANTE: Rescatamos el ID aquí
       email: payload?.sub || null,
       nombre: payload?.name || payload?.username || payload?.sub || null,
     };
@@ -42,8 +45,15 @@ export const AuthProvider = ({ children }) => {
     if (!newToken) return;
     localStorage.setItem('token', newToken);
     setToken(newToken);
+    
     const payload = decodeJwt(newToken) || {};
+    
+    // Para depurar: ver qué trae el token realmente
+    console.log("Payload del Token:", payload); 
+
+    // 2. CORRECCIÓN AL INICIAR SESIÓN
     setCurrentUser({
+      id: payload.userId || null, // <--- IMPORTANTE: Rescatamos el ID aquí también
       email: payload.sub || null,
       nombre: payload.name || payload.username || payload.sub || null,
     });
@@ -66,7 +76,7 @@ export const AuthProvider = ({ children }) => {
 
   // Public helper to register using auth-service (returns fetch Response)
   const register = async ({ username, email, password }) => {
-    const base = import.meta.env.VITE_AUTH_URL || 'http://localhost:8080';
+    const base = import.meta.env.VITE_AUTH_URL || 'http://98.88.88.48:8080';
     const resp = await fetch(`${base}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -77,7 +87,7 @@ export const AuthProvider = ({ children }) => {
 
   // Public helper to login (calls auth-service and stores token)
   const login = async ({ email, password }) => {
-    const base = import.meta.env.VITE_AUTH_URL || 'http://localhost:8080';
+    const base = import.meta.env.VITE_AUTH_URL || 'http://98.88.88.48:8080';
     const resp = await fetch(`${base}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -109,8 +119,8 @@ export const AuthProvider = ({ children }) => {
     currentUser,
     isLoggedIn,
     token,
-    login, // function that calls auth-service and sets token
-    loginWithToken, // low-level setter if you already have a token
+    login,
+    loginWithToken,
     logout,
     register,
     getAuthHeaders,
