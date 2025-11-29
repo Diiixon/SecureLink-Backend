@@ -5,7 +5,7 @@ import { Doughnut, Bar } from 'react-chartjs-2';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
-const STATS_API = import.meta.env.VITE_Stats_URL;
+const STATS_API = import.meta.env.VITE_Stats_URL || 'http://localhost:8082';
 
 function EstadisticasContent() {
     const { currentUser, getAuthHeaders } = useAuth();
