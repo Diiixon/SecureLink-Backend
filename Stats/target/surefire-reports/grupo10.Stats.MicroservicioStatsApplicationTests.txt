@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: grupo10.Stats.MicroservicioStatsApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 13.45 s -- in grupo10.Stats.MicroservicioStatsApplicationTests
