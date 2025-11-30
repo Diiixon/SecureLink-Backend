@@ -41,11 +41,13 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:5173",  // Desarrollo local
-            "http://s3-dta-app-react.s3-website-us-east-1.amazonaws.com"  // Producción en S3
+            "http://localhost:3000",  // Desarrollo local alternativo
+            "http://s3-securelink.s3-website-us-east-1.amazonaws.com"  // Producción en S3
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));  // Permitir todos los headers
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);  // Cache preflight por 1 hora
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
