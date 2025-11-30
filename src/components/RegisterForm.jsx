@@ -2,45 +2,72 @@ import { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import SuccessModal from './SuccessModal'; 
 
-// usamos el helper de AuthContext para registrar
+// Importa el hook `useAuth` del contexto de autenticación para acceder a la función de registro.
 import { useAuth } from '../context/AuthContext';
 
 
-// Componente para el formulario de registro
+/**
+ * Componente que renderiza un formulario de registro para nuevos usuarios.
+ */
 function RegisterForm() {
-    const [formData, setFormData] = useState({ // Estado para los datos del formulario
+    // --- ESTADOS ---
+
+    // Estado para almacenar todos los datos del formulario en un solo objeto.
+    const [formData, setFormData] = useState({ 
         username: "",
         email: "",
         password: "",
         confirmPassword: "",
     });
-    const [passwordError, setPasswordError] = useState(""); // Estado para el mensaje de error de contraseña
-    const navigate = useNavigate(); 
-    const [isModalVisible, setIsModalVisible] = useState(false); // Estado para controlar la visibilidad del modal
-    const { register } = useAuth();
+    // Estado específico para los mensajes de error relacionados con la contraseña.
+    const [passwordError, setPasswordError] = useState(""); 
+    // Estado para controlar la visibilidad del modal de éxito.
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
-    const handleChange = (e) => { // Función para manejar cambios en los campos del formulario
+    // --- HOOKS ---
+    const navigate = useNavigate(); // Hook para la navegación programática.
+    const { register } = useAuth(); // Obtiene la función `register` del contexto de autenticación.
+
+    /**
+     * Maneja los cambios en cualquiera de los campos del formulario.
+     * Actualiza el estado `formData` de manera genérica.
+     * @param {Event} e - El evento de cambio del input.
+     */
+    const handleChange = (e) => {
         const { name, value } = e.target;
+        // Actualiza la propiedad correspondiente en el estado `formData`.
         setFormData((prevData) => ({ ...prevData, [name]: value }));
+        // Si el cambio ocurre en un campo de contraseña, limpia el error.
         if (name === "password" || name === "confirmPassword") {
             setPasswordError("");
         }
     };
 
-    const handleCloseModal = () => { // Función para cerrar la ventana de registro exitoso y redirige al usuario a la página de inicio de sesión
+    /**
+     * Cierra el modal de registro exitoso y redirige al usuario a la página de inicio de sesión.
+     */
+    const handleCloseModal = () => {
         setIsModalVisible(false);
         navigate('/login');
     };
 
-    const handleSubmit = async (e) => { // Función para manejar el envío del formulario de registro
-        e.preventDefault();
-        if (formData.password !== formData.confirmPassword) { // Verifica si las contraseñas coinciden
+    /**
+     * Maneja el envío del formulario de registro.
+     * Realiza validaciones y llama a la API de registro.
+     * @param {Event} e - El evento de envío del formulario.
+     */
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // Evita que la página se recargue.
+
+        // Validación: Verifica que las contraseñas coincidan.
+        if (formData.password !== formData.confirmPassword) {
             setPasswordError("Las contraseñas no coinciden.");
-            return;
+            return; // Detiene el envío si no coinciden.
         }
-        setPasswordError(""); 
+        setPasswordError(""); // Limpia el error si coinciden.
 
         try {
+            // Llama a la función `register` del contexto con los datos del formulario.
             const response = await register({
                 username: formData.username,
                 email: formData.email,
@@ -48,18 +75,21 @@ function RegisterForm() {
             });
 
             if (response.ok) {
+                // Si el registro es exitoso (ej. status 201), muestra el modal de éxito.
                 setIsModalVisible(true);
             } else {
+                // Si hay un error (ej. usuario ya existe), muestra el mensaje de la API.
                 const data = await response.json().catch(() => ({}));
                 alert(data.message || data.error || 'Ocurrió un error al registrar.');
             }
         } catch (error) {
+            // Maneja errores de red o de conexión con el servidor.
             console.error('Error de red:', error);
             alert('No se pudo conectar al servidor.');
         }
     };
 
-    // Renderiza el formulario de registro
+    // Renderiza el formulario de registro.
     return (
         <>
             <main className="auth-container">
@@ -69,21 +99,26 @@ function RegisterForm() {
                         <p>Únete para proteger tu navegación.</p>
                     </div>
                     <form id="formulario" onSubmit={handleSubmit}>
+                        {/* Grupo de input para el nombre de usuario */}
                         <div className="input-group">
                             <label htmlFor="username">Nombre de Usuario</label>
                             <input type="text" id="username" name="username" placeholder="Elige un nombre de usuario" required value={formData.username} onChange={handleChange} />
                         </div>
+                        {/* Grupo de input para el correo */}
                         <div className="input-group">
                             <label htmlFor="email">Correo Electrónico</label>
                             <input type="email" id="email" name="email" placeholder="tu@email.com" required value={formData.email} onChange={handleChange} />
                         </div>
+                        {/* Grupo de input para la contraseña */}
                         <div className="input-group">
                             <label htmlFor="password">Contraseña</label>
                             <input type="password" id="password" name="password" placeholder="••••••••" required value={formData.password} onChange={handleChange} />
                         </div>
+                        {/* Grupo de input para confirmar la contraseña */}
                         <div className="input-group">
                             <label htmlFor="confirmPassword">Confirmar Contraseña</label>
                             <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required value={formData.confirmPassword} onChange={handleChange} />
+                            {/* Muestra el mensaje de error de contraseña si existe */}
                             {passwordError && <p className="error-message">{passwordError}</p>}
                         </div>
                         <button type="submit" className="submit-btn">Crear Cuenta</button>
@@ -94,9 +129,10 @@ function RegisterForm() {
                 </div>
             </main>
 
+            {/* Modal de éxito que se muestra cuando el registro es correcto */}
             <SuccessModal 
-                isVisible={isModalVisible} // Indica si se debe mostrar el modal
-                onClose={handleCloseModal} // Función para cerrar el modal
+                isVisible={isModalVisible}
+                onClose={handleCloseModal}
             />
         </>
     );
